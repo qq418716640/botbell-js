@@ -1,0 +1,49 @@
+{
+  "name": "@botbell/sdk",
+  "version": "0.1.0",
+  "description": "Official JavaScript/TypeScript SDK for BotBell — push notifications for AI agents and scripts",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "tsc --noEmit",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "botbell",
+    "push-notification",
+    "ai-agent",
+    "webhook",
+    "mcp"
+  ],
+  "author": "BotBell <support@botbell.app>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/qq418716640/botbell-js"
+  },
+  "homepage": "https://botbell.app",
+  "bugs": {
+    "url": "https://github.com/qq418716640/botbell-js/issues"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^25.5.0",
+    "typescript": "^5.4",
+    "vitest": "^3.0"
+  }
+}
