@@ -21,3 +21,5 @@ export type {
   WaitOptions,
 } from "./types.js";
 export { VERSION } from "./version.js";
+export { verifyWebhook, WebhookVerificationError } from "./webhook.js";
+export type { VerifyWebhookOptions } from "./webhook.js";
