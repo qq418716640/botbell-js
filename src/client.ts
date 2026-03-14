@@ -180,6 +180,79 @@ export class BotBell {
     return this._parseBot(resp.data as Record<string, unknown>);
   }
 
+  /**
+   * Get bot details. PAT mode only.
+   *
+   * @param botId - Bot identifier.
+   * @returns Bot details (token is masked as hint).
+   */
+  async getBot(botId: string): Promise<Bot> {
+    this._requirePat("getBot");
+    const resp = await this._request("GET", `/bots/${botId}`);
+    return this._parseBot(resp.data as Record<string, unknown>);
+  }
+
+  /**
+   * Update a bot. PAT mode only.
+   *
+   * @param botId - Bot identifier.
+   * @param updates - Fields to update.
+   * @returns Updated Bot details.
+   */
+  async updateBot(
+    botId: string,
+    updates: {
+      name?: string;
+      description?: string;
+      replyUrl?: string;
+      status?: "active" | "paused";
+    },
+  ): Promise<Bot> {
+    this._requirePat("updateBot");
+    const body: Record<string, unknown> = {};
+    if (updates.name != null) body.name = updates.name;
+    if (updates.description != null) body.description = updates.description;
+    if (updates.replyUrl != null) body.reply_url = updates.replyUrl;
+    if (updates.status != null) body.status = updates.status;
+    const resp = await this._request("PATCH", `/bots/${botId}`, body);
+    return this._parseBot(resp.data as Record<string, unknown>);
+  }
+
+  /**
+   * Delete a bot. PAT mode only.
+   *
+   * @param botId - Bot identifier.
+   */
+  async deleteBot(botId: string): Promise<void> {
+    this._requirePat("deleteBot");
+    await this._request("DELETE", `/bots/${botId}`);
+  }
+
+  /**
+   * Reset a bot's API token. PAT mode only.
+   * The old token is invalidated immediately.
+   *
+   * @param botId - Bot identifier.
+   * @returns The new API token string.
+   */
+  async resetBotToken(botId: string): Promise<string> {
+    this._requirePat("resetBotToken");
+    const resp = await this._request("POST", `/bots/${botId}/reset-token`);
+    return (resp.data as Record<string, unknown>).api_token as string;
+  }
+
+  /**
+   * Reset a bot's webhook secret. PAT mode only.
+   *
+   * @param botId - Bot identifier.
+   * @returns The new webhook secret string.
+   */
+  async resetWebhookSecret(botId: string): Promise<string> {
+    this._requirePat("resetWebhookSecret");
+    const resp = await this._request("POST", `/bots/${botId}/reset-webhook-secret`);
+    return (resp.data as Record<string, unknown>).webhook_secret as string;
+  }
+
   /** Get current message quota. PAT mode only. */
   async getQuota(): Promise<Quota> {
     this._requirePat("getQuota");
@@ -325,7 +398,8 @@ export class BotBell {
     return {
       botId: (data.bot_id as string) ?? "",
       name: (data.name as string) ?? "",
-      token: data.token as string | undefined,
+      description: data.description as string | undefined,
+      token: (data.token ?? data.api_token) as string | undefined,
       pushUrl: data.push_url as string | undefined,
       replyUrl: data.reply_url as string | undefined,
       status: data.status as string | undefined,

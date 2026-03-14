@@ -24,6 +24,7 @@ export interface Reply {
 export interface Bot {
   botId: string;
   name: string;
+  description?: string;
   token?: string;
   pushUrl?: string;
   replyUrl?: string;
