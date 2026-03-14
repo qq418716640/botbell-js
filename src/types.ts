@@ -26,6 +26,7 @@ export interface Bot {
   name: string;
   description?: string;
   token?: string;
+  webhookSecret?: string;
   pushUrl?: string;
   replyUrl?: string;
   status?: string;

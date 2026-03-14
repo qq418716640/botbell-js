@@ -164,19 +164,27 @@ export class BotBell {
   async listBots(): Promise<Bot[]> {
     this._requirePat("listBots");
     const resp = await this._request("GET", "/bots");
-    const data = resp.data as Record<string, unknown>[];
-    return data.map((item) => this._parseBot(item));
+    const data = resp.data as Record<string, unknown>;
+    const botsList = (Array.isArray(data) ? data : (data.bots ?? [])) as Record<string, unknown>[];
+    return botsList.map((item) => this._parseBot(item));
   }
 
   /**
    * Create a new bot. PAT mode only.
    *
-   * @param name - Bot display name.
-   * @returns The created Bot (includes token and pushUrl).
+   * @param name - Bot display name (max 50 chars).
+   * @param options - Optional creation parameters.
+   * @returns The created Bot (includes token, pushUrl, and webhookSecret).
    */
-  async createBot(name: string): Promise<Bot> {
+  async createBot(
+    name: string,
+    options?: { description?: string; replyUrl?: string },
+  ): Promise<Bot> {
     this._requirePat("createBot");
-    const resp = await this._request("POST", "/bots", { name });
+    const body: Record<string, unknown> = { name };
+    if (options?.description != null) body.description = options.description;
+    if (options?.replyUrl != null) body.reply_url = options.replyUrl;
+    const resp = await this._request("POST", "/bots", body);
     return this._parseBot(resp.data as Record<string, unknown>);
   }
 
@@ -400,6 +408,7 @@ export class BotBell {
       name: (data.name as string) ?? "",
       description: data.description as string | undefined,
       token: (data.token ?? data.api_token) as string | undefined,
+      webhookSecret: data.webhook_secret as string | undefined,
       pushUrl: data.push_url as string | undefined,
       replyUrl: data.reply_url as string | undefined,
       status: data.status as string | undefined,

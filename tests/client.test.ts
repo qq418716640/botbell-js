@@ -205,7 +205,13 @@ describe("bot management", () => {
   it("lists bots", async () => {
     const fetchMock = mockFetch({
       code: 0,
-      data: [{ bot_id: "bot_1", name: "Test Bot", status: "active", created_at: 1700000000 }],
+      data: {
+        bots: [
+          { bot_id: "bot_1", name: "Test Bot", description: "A test bot", status: "active", created_at: 1700000000 },
+        ],
+        total: 1,
+        limit: 50,
+      },
     });
     globalThis.fetch = fetchMock;
 
@@ -215,22 +221,102 @@ describe("bot management", () => {
     expect(bots).toHaveLength(1);
     expect(bots[0].botId).toBe("bot_1");
     expect(bots[0].name).toBe("Test Bot");
+    expect(bots[0].description).toBe("A test bot");
     expect(bots[0].status).toBe("active");
   });
 
-  it("creates bot", async () => {
+  it("creates bot with options", async () => {
     const fetchMock = mockFetch({
       code: 0,
-      data: { bot_id: "bot_new", name: "My Bot", token: "bt_new123", push_url: "https://..." },
+      data: {
+        bot_id: "bot_new",
+        name: "My Bot",
+        api_token: "bt_new123",
+        push_url: "https://api.botbell.app/v1/push/bt_new123",
+        webhook_secret: "whsec_abc123",
+      },
     });
     globalThis.fetch = fetchMock;
 
     const client = new BotBell({ pat: "pak_test123" });
-    const bot = await client.createBot("My Bot");
+    const bot = await client.createBot("My Bot", {
+      description: "Deploy notifications",
+      replyUrl: "https://example.com/hook",
+    });
 
     expect(bot.botId).toBe("bot_new");
     expect(bot.token).toBe("bt_new123");
-    expect(bot.pushUrl).toBeDefined();
+    expect(bot.webhookSecret).toBe("whsec_abc123");
+
+    const body = JSON.parse(fetchMock.mock.calls[0][1].body as string);
+    expect(body.description).toBe("Deploy notifications");
+    expect(body.reply_url).toBe("https://example.com/hook");
+  });
+
+  it("gets bot details", async () => {
+    const fetchMock = mockFetch({
+      code: 0,
+      data: { bot_id: "bot_1", name: "Test Bot", status: "active" },
+    });
+    globalThis.fetch = fetchMock;
+
+    const client = new BotBell({ pat: "pak_test123" });
+    const bot = await client.getBot("bot_1");
+    expect(bot.botId).toBe("bot_1");
+    expect(fetchMock.mock.calls[0][0]).toContain("/bots/bot_1");
+  });
+
+  it("updates bot", async () => {
+    const fetchMock = mockFetch({
+      code: 0,
+      data: { bot_id: "bot_1", name: "New Name", status: "paused" },
+    });
+    globalThis.fetch = fetchMock;
+
+    const client = new BotBell({ pat: "pak_test123" });
+    const bot = await client.updateBot("bot_1", { name: "New Name", status: "paused" });
+
+    expect(bot.name).toBe("New Name");
+    expect(bot.status).toBe("paused");
+    const [, init] = fetchMock.mock.calls[0];
+    expect(init.method).toBe("PATCH");
+    const body = JSON.parse(init.body as string);
+    expect(body.name).toBe("New Name");
+    expect(body.status).toBe("paused");
+  });
+
+  it("deletes bot", async () => {
+    const fetchMock = mockFetch({ code: 0, message: "success" });
+    globalThis.fetch = fetchMock;
+
+    const client = new BotBell({ pat: "pak_test123" });
+    await client.deleteBot("bot_1");
+
+    const [url, init] = fetchMock.mock.calls[0];
+    expect(init.method).toBe("DELETE");
+    expect(url).toContain("/bots/bot_1");
+  });
+
+  it("resets bot token", async () => {
+    const fetchMock = mockFetch({ code: 0, data: { api_token: "bt_new_rotated" } });
+    globalThis.fetch = fetchMock;
+
+    const client = new BotBell({ pat: "pak_test123" });
+    const newToken = await client.resetBotToken("bot_1");
+
+    expect(newToken).toBe("bt_new_rotated");
+    expect(fetchMock.mock.calls[0][0]).toContain("/bots/bot_1/reset-token");
+  });
+
+  it("resets webhook secret", async () => {
+    const fetchMock = mockFetch({ code: 0, data: { webhook_secret: "whsec_new_rotated" } });
+    globalThis.fetch = fetchMock;
+
+    const client = new BotBell({ pat: "pak_test123" });
+    const newSecret = await client.resetWebhookSecret("bot_1");
+
+    expect(newSecret).toBe("whsec_new_rotated");
+    expect(fetchMock.mock.calls[0][0]).toContain("/bots/bot_1/reset-webhook-secret");
   });
 
   it("gets quota", async () => {
