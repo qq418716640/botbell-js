@@ -110,14 +110,12 @@ export class BotBell {
 
     const data = resp.data as Record<string, unknown>;
     const messageId = data.message_id as string;
-    const resolvedBotId = options.botId ?? (data.bot_id as string | undefined);
-
     return {
       messageId,
       delivered: (data.delivered as boolean) ?? true,
       waitForReply: (waitOpts?: WaitOptions) =>
         this._waitForReply({
-          botId: resolvedBotId,
+          botId: options.botId,
           messageId,
           timeout: waitOpts?.timeout ?? 300,
           pollInterval: waitOpts?.pollInterval ?? 3,
@@ -244,10 +242,14 @@ export class BotBell {
    * @param botId - Bot identifier.
    * @returns The new API token string.
    */
-  async resetBotToken(botId: string): Promise<string> {
+  async resetBotToken(botId: string): Promise<{ apiToken: string; pushUrl: string }> {
     this._requirePat("resetBotToken");
     const resp = await this._request("POST", `/bots/${botId}/reset-token`);
-    return (resp.data as Record<string, unknown>).api_token as string;
+    const data = resp.data as Record<string, unknown>;
+    return {
+      apiToken: data.api_token as string,
+      pushUrl: (data.push_url as string) ?? "",
+    };
   }
 
   /**

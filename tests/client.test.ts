@@ -300,13 +300,17 @@ describe("bot management", () => {
   });
 
   it("resets bot token", async () => {
-    const fetchMock = mockFetch({ code: 0, data: { api_token: "bt_new_rotated" } });
+    const fetchMock = mockFetch({
+      code: 0,
+      data: { api_token: "bt_new_rotated", push_url: "https://api.botbell.app/v1/push/bt_new_rotated" },
+    });
     globalThis.fetch = fetchMock;
 
     const client = new BotBell({ pat: "pak_test123" });
-    const newToken = await client.resetBotToken("bot_1");
+    const result = await client.resetBotToken("bot_1");
 
-    expect(newToken).toBe("bt_new_rotated");
+    expect(result.apiToken).toBe("bt_new_rotated");
+    expect(result.pushUrl).toContain("bt_new_rotated");
     expect(fetchMock.mock.calls[0][0]).toContain("/bots/bot_1/reset-token");
   });
 
