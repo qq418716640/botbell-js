@@ -100,6 +100,34 @@ const remaining = quota.monthlyLimit != null ? quota.monthlyLimit - quota.monthl
 console.log(`${quota.plan}: ${remaining} messages left`);
 ```
 
+## Webhook Signature Verification
+
+When using `replyUrl` (webhook), verify incoming requests to ensure they're from BotBell:
+
+```ts
+import { verifyWebhook, WebhookVerificationError } from "@botbell/sdk";
+
+// In your webhook handler (Express/Fastify/Hono etc.)
+try {
+  verifyWebhook({
+    body: req.body, // raw string or Buffer
+    signature: req.headers["x-webhook-signature"],
+    timestamp: req.headers["x-webhook-timestamp"],
+    secret: "your_webhook_secret",
+  });
+} catch (e) {
+  if (e instanceof WebhookVerificationError) {
+    return res.status(401).json({ error: e.message });
+  }
+  throw e;
+}
+
+// Signature valid — process the reply
+const data = JSON.parse(req.body);
+```
+
+The verification checks HMAC-SHA256 signature and rejects requests older than 5 minutes (configurable via `tolerance` option).
+
 ## API Reference
 
 ### `new BotBell(options)`
@@ -122,6 +150,18 @@ console.log(`${quota.plan}: ${remaining} messages left`);
 ### `createBot(name) → Promise<Bot>` (PAT only)
 
 ### `getQuota() → Promise<Quota>` (PAT only)
+
+### `verifyWebhook(options)`
+
+Verifies webhook signature. Throws `WebhookVerificationError` on failure.
+
+| Option | Type | Description |
+|--------|------|-------------|
+| `body` | `string \| Buffer` | Raw request body |
+| `signature` | `string` | `X-Webhook-Signature` header value |
+| `timestamp` | `string` | `X-Webhook-Timestamp` header value |
+| `secret` | `string` | Your bot's webhook secret |
+| `tolerance` | `number` | Max age in seconds (default: 300) |
 
 ## Errors
 
