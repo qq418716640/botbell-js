@@ -13,7 +13,6 @@ export interface Action {
 /** A user reply to a message. */
 export interface Reply {
   replyId: string;
-  botId: string;
   message: string;
   timestamp: number;
   action?: string;
@@ -45,6 +44,8 @@ export interface Quota {
 /** Result of sending a message. */
 export interface SendResult {
   messageId: string;
+  /** Whether the push notification was delivered to a device. */
+  delivered: boolean;
   /** Block until a reply is received or timeout. */
   waitForReply(options?: WaitOptions): Promise<Reply | null>;
 }

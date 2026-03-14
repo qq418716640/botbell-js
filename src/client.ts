@@ -114,6 +114,7 @@ export class BotBell {
 
     return {
       messageId,
+      delivered: (data.delivered as boolean) ?? true,
       waitForReply: (waitOpts?: WaitOptions) =>
         this._waitForReply({
           botId: resolvedBotId,
@@ -301,7 +302,6 @@ export class BotBell {
     ) as Record<string, unknown>[];
     return messages.map((item) => ({
       replyId: (item.message_id as string) ?? "",
-      botId: (item.bot_id as string) ?? "",
       message: (item.content as string) ?? "",
       timestamp: (item.timestamp as number) ?? 0,
       action: item.action as string | undefined,
