@@ -269,10 +269,10 @@ export class BotBell {
     const data = resp.data as Record<string, unknown>;
     return {
       plan: (data.plan as string) ?? "free",
-      monthlyLimit: (data.monthly_limit as number | null) ?? null,
-      monthlyUsed: (data.monthly_used as number) ?? 0,
-      botLimit: (data.bot_limit as number) ?? 3,
-      botUsed: (data.bot_used as number) ?? 0,
+      monthlyLimit: (data.monthly_limit as number) ?? 0,
+      used: (data.used as number) ?? 0,
+      remaining: (data.remaining as number) ?? 0,
+      resetAt: (data.reset_at as number) ?? 0,
     };
   }
 

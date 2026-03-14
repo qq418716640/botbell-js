@@ -35,10 +35,10 @@ export interface Bot {
 /** User's message quota information. */
 export interface Quota {
   plan: string;
-  monthlyLimit: number | null;
-  monthlyUsed: number;
-  botLimit: number;
-  botUsed: number;
+  monthlyLimit: number;
+  used: number;
+  remaining: number;
+  resetAt: number;
 }
 
 /** Result of sending a message. */

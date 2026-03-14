@@ -324,7 +324,7 @@ describe("bot management", () => {
   it("gets quota", async () => {
     const fetchMock = mockFetch({
       code: 0,
-      data: { plan: "free", monthly_limit: 300, monthly_used: 42, bot_limit: 3, bot_used: 1 },
+      data: { plan: "free", monthly_limit: 300, used: 42, remaining: 258, reset_at: 1700000000 },
     });
     globalThis.fetch = fetchMock;
 
@@ -333,8 +333,9 @@ describe("bot management", () => {
 
     expect(quota.plan).toBe("free");
     expect(quota.monthlyLimit).toBe(300);
-    expect(quota.monthlyUsed).toBe(42);
-    expect(quota.botLimit).toBe(3);
+    expect(quota.used).toBe(42);
+    expect(quota.remaining).toBe(258);
+    expect(quota.resetAt).toBe(1700000000);
   });
 
   it("throws when bot management called in bot token mode", async () => {

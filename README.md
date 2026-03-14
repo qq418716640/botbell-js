@@ -96,8 +96,7 @@ await client.send("Hello!", { botId: newBot.botId });
 
 // Check quota
 const quota = await client.getQuota();
-const remaining = quota.monthlyLimit != null ? quota.monthlyLimit - quota.monthlyUsed : "unlimited";
-console.log(`${quota.plan}: ${remaining} messages left`);
+console.log(`${quota.plan}: ${quota.remaining}/${quota.monthlyLimit} messages left`);
 ```
 
 ## Webhook Signature Verification
