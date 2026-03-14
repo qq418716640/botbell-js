@@ -155,16 +155,18 @@ describe("getReplies", () => {
   it("gets replies in bot token mode", async () => {
     const fetchMock = mockFetch({
       code: 0,
-      data: [
-        {
-          reply_id: "r_1",
-          bot_id: "bot_1",
-          message: "Yes",
-          timestamp: 1700000000,
-          action: "approve",
-          reply_to: "msg_1",
-        },
-      ],
+      data: {
+        messages: [
+          {
+            message_id: "r_1",
+            content: "Yes",
+            timestamp: 1700000000,
+            action: "approve",
+            reply_to: "msg_1",
+          },
+        ],
+        has_more: false,
+      },
     });
     globalThis.fetch = fetchMock;
 
@@ -183,7 +185,7 @@ describe("getReplies", () => {
   });
 
   it("gets replies in PAT mode", async () => {
-    const fetchMock = mockFetch({ code: 0, data: [] });
+    const fetchMock = mockFetch({ code: 0, data: { messages: [], has_more: false } });
     globalThis.fetch = fetchMock;
 
     const client = new BotBell({ pat: "pak_test123" });
@@ -437,9 +439,12 @@ describe("sendAndWait", () => {
           Promise.resolve(
             JSON.stringify({
               code: 0,
-              data: [
-                { reply_id: "r_1", bot_id: "bot_1", message: "Yes", action: "approve", reply_to: "msg_1" },
-              ],
+              data: {
+                messages: [
+                  { message_id: "r_1", content: "Yes", action: "approve", reply_to: "msg_1" },
+                ],
+                has_more: false,
+              },
             }),
           ),
       });
@@ -476,11 +481,14 @@ describe("sendAndWait", () => {
             Promise.resolve(
               JSON.stringify({
                 code: 0,
-                data: [
-                  { reply_id: "r_before", bot_id: "bot_1", message: "Before", reply_to: "msg_other" },
-                  { reply_id: "r_1", bot_id: "bot_1", message: "Yes", reply_to: "msg_1" },
-                  { reply_id: "r_after", bot_id: "bot_1", message: "After", reply_to: "msg_another" },
-                ],
+                data: {
+                  messages: [
+                    { message_id: "r_before", content: "Before", reply_to: "msg_other" },
+                    { message_id: "r_1", content: "Yes", reply_to: "msg_1" },
+                    { message_id: "r_after", content: "After", reply_to: "msg_another" },
+                  ],
+                  has_more: false,
+                },
               }),
             ),
         });
@@ -489,7 +497,7 @@ describe("sendAndWait", () => {
       return Promise.resolve({
         ok: true,
         status: 200,
-        text: () => Promise.resolve(JSON.stringify({ code: 0, data: [] })),
+        text: () => Promise.resolve(JSON.stringify({ code: 0, data: { messages: [], has_more: false } })),
       });
     });
 
@@ -523,7 +531,7 @@ describe("sendAndWait", () => {
       return Promise.resolve({
         ok: true,
         status: 200,
-        text: () => Promise.resolve(JSON.stringify({ code: 0, data: [] })),
+        text: () => Promise.resolve(JSON.stringify({ code: 0, data: { messages: [], has_more: false } })),
       });
     });
 

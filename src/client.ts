@@ -295,11 +295,14 @@ export class BotBell {
       resp = await this._request("GET", `/bots/${botId}/replies`);
     }
 
-    const data = (resp.data ?? []) as Record<string, unknown>[];
-    return data.map((item) => ({
-      replyId: (item.reply_id as string) ?? "",
+    const wrapper = resp.data as Record<string, unknown>;
+    const messages = (
+      Array.isArray(wrapper) ? wrapper : (wrapper.messages ?? [])
+    ) as Record<string, unknown>[];
+    return messages.map((item) => ({
+      replyId: (item.message_id as string) ?? "",
       botId: (item.bot_id as string) ?? "",
-      message: (item.message as string) ?? "",
+      message: (item.content as string) ?? "",
       timestamp: (item.timestamp as number) ?? 0,
       action: item.action as string | undefined,
       replyTo: item.reply_to as string | undefined,
