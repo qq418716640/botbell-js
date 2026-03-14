@@ -147,7 +147,17 @@ The verification checks HMAC-SHA256 signature and rejects requests older than 5 
 
 ### `listBots() → Promise<Bot[]>` (PAT only)
 
-### `createBot(name) → Promise<Bot>` (PAT only)
+### `createBot(name, options?) → Promise<Bot>` (PAT only)
+
+### `getBot(botId) → Promise<Bot>` (PAT only)
+
+### `updateBot(botId, updates) → Promise<Bot>` (PAT only)
+
+### `deleteBot(botId) → Promise<void>` (PAT only)
+
+### `resetBotToken(botId) → Promise<string>` (PAT only)
+
+### `resetWebhookSecret(botId) → Promise<string>` (PAT only)
 
 ### `getQuota() → Promise<Quota>` (PAT only)
 

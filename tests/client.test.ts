@@ -339,6 +339,11 @@ describe("bot management", () => {
     const client = new BotBell({ token: "bt_test123" });
     await expect(client.listBots()).rejects.toThrow("requires PAT mode");
     await expect(client.createBot("test")).rejects.toThrow("requires PAT mode");
+    await expect(client.getBot("bot_1")).rejects.toThrow("requires PAT mode");
+    await expect(client.updateBot("bot_1", { name: "x" })).rejects.toThrow("requires PAT mode");
+    await expect(client.deleteBot("bot_1")).rejects.toThrow("requires PAT mode");
+    await expect(client.resetBotToken("bot_1")).rejects.toThrow("requires PAT mode");
+    await expect(client.resetWebhookSecret("bot_1")).rejects.toThrow("requires PAT mode");
     await expect(client.getQuota()).rejects.toThrow("requires PAT mode");
   });
 });
