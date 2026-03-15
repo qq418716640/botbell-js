@@ -1,3 +1,5 @@
+[English](README.md) | [中文](README.zh-CN.md)
+
 # @botbell/sdk
 
 Official JavaScript/TypeScript SDK for [BotBell](https://botbell.app) — push notifications for AI agents and scripts.
