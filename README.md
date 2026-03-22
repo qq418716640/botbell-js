@@ -2,6 +2,11 @@
 
 # @botbell/sdk
 
+[![npm](https://img.shields.io/npm/v/@botbell/sdk)](https://www.npmjs.com/package/@botbell/sdk)
+[![Node](https://img.shields.io/node/v/@botbell/sdk)](https://www.npmjs.com/package/@botbell/sdk)
+[![License](https://img.shields.io/github/license/qq418716640/botbell-js)](https://github.com/qq418716640/botbell-js/blob/main/LICENSE)
+[![CI](https://github.com/qq418716640/botbell-js/actions/workflows/ci.yml/badge.svg)](https://github.com/qq418716640/botbell-js/actions/workflows/ci.yml)
+
 Official JavaScript/TypeScript SDK for [BotBell](https://botbell.app) — push notifications for AI agents and scripts.
 
 **Zero dependencies.** Uses only the built-in `fetch` API (Node.js 18+).
